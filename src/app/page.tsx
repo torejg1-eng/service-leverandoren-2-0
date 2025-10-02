@@ -50,7 +50,6 @@ function hexToRgbTuple(hex: string = "#ffffff") {
   const b = num & 255;
   return `${r}, ${g}, ${b}`;
 }
-
 // ================== START defaultSettings ==================
 const defaultSettings = {
   service: {
@@ -69,7 +68,7 @@ const defaultSettings = {
     sharp: false,
     glowColor: "#b51a00",
     glowStrength: 0.6,
-    gap: 0.9,
+    gap: 0.3,
     houseScale: 1.3,
     background: "house-sketch1.jpeg",
     textColor: "#000000",
@@ -78,7 +77,7 @@ const defaultSettings = {
   },
   ventilasjon: {
     top: 58,
-    left: 32.5,
+    left: 29.5,
     rotate: 2.8,
     scale: 1.8,
     fontSize: 15,
@@ -101,7 +100,7 @@ const defaultSettings = {
   },
   tomrer: {
     top: 61,
-    left: 60,
+    left: 58,
     rotate: 3,
     scale: 1.8,
     fontSize: 15,
@@ -147,6 +146,7 @@ const defaultSettings = {
   },
 };
 // ================== END defaultSettings ==================
+
 // ===== START STATE BLOKK =====
 export default function HomePage() {
   /*** STATE ***/
