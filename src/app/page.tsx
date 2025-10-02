@@ -355,7 +355,6 @@ type ConfigKey = keyof typeof defaultSettings;
 type ConfigField = keyof TextConfig;
 
 const adjust = (key: ConfigKey, field: ConfigField, delta: number) => {
-alert(`Field: ${field}, Delta: ${delta}`); 
   const cfg = settings[key] as TextConfig;
   const current = cfg[field];
 
