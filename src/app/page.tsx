@@ -3,6 +3,30 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
+// ================== START RESPONSIVE SETTINGS ==================
+function useResponsiveSettings(settings: any) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768); // <768px = mobil
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Lag en kopi og juster hvis mobil
+  const adjusted = { ...settings };
+  if (isMobile) {
+    adjusted.scale = adjusted.scale * 0.6;       // mindre hus
+    adjusted.fontSize = adjusted.fontSize * 0.7; // mindre tekst
+    adjusted.top = adjusted.top * 1.1;           // flytt litt ned
+  }
+
+  return adjusted;
+}
+// ================== END RESPONSIVE SETTINGS ==================
+
+
 // ===== START TextConfig interface =====
 interface TextConfig {
   // Posisjon og transformasjon
@@ -146,6 +170,75 @@ const defaultSettings = {
   },
 };
 // ================== END defaultSettings ==================
+// ================== START PAGE ==================
+export default function Page() {
+  // 📌 Responsive versjoner av hver seksjon
+  const serviceSettings = useResponsiveSettings(defaultSettings.service);
+  const ventilasjonSettings = useResponsiveSettings(defaultSettings.ventilasjon);
+  const tomrerSettings = useResponsiveSettings(defaultSettings.tomrer);
+  const nordicSettings = useResponsiveSettings(defaultSettings.nordic);
+
+  return (
+    <main className="min-h-screen bg-gray-100">
+      {/* === Service === */}
+      <div
+        style={{
+          position: "absolute",
+          top: `${serviceSettings.top}%`,
+          left: `${serviceSettings.left}%`,
+          transform: `rotate(${serviceSettings.rotate}deg) scale(${serviceSettings.scale})`,
+          fontSize: `${serviceSettings.fontSize}px`,
+          color: serviceSettings.textColor,
+        }}
+      >
+        Service
+      </div>
+
+      {/* === Ventilasjon === */}
+      <div
+        style={{
+          position: "absolute",
+          top: `${ventilasjonSettings.top}%`,
+          left: `${ventilasjonSettings.left}%`,
+          transform: `rotate(${ventilasjonSettings.rotate}deg) scale(${ventilasjonSettings.scale})`,
+          fontSize: `${ventilasjonSettings.fontSize}px`,
+          color: ventilasjonSettings.textColor,
+        }}
+      >
+        Ventilasjon
+      </div>
+
+      {/* === Tømrer === */}
+      <div
+        style={{
+          position: "absolute",
+          top: `${tomrerSettings.top}%`,
+          left: `${tomrerSettings.left}%`,
+          transform: `rotate(${tomrerSettings.rotate}deg) scale(${tomrerSettings.scale})`,
+          fontSize: `${tomrerSettings.fontSize}px`,
+          color: tomrerSettings.textColor,
+        }}
+      >
+        Tømrer
+      </div>
+
+      {/* === Nordic Smart === */}
+      <div
+        style={{
+          position: "absolute",
+          top: `${nordicSettings.top}%`,
+          left: `${nordicSettings.left}%`,
+          transform: `rotate(${nordicSettings.rotate}deg) scale(${nordicSettings.scale})`,
+          fontSize: `${nordicSettings.fontSize}px`,
+          color: nordicSettings.textColor,
+        }}
+      >
+        Nordic Smart
+      </div>
+    </main>
+  );
+}
+// ================== END PAGE ==================
 
 // ===== START STATE BLOKK =====
 export default function HomePage() {
