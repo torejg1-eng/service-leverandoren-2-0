@@ -51,12 +51,12 @@ function hexToRgbTuple(hex: string = "#ffffff") {
   return `${r}, ${g}, ${b}`;
 }
 
-/*** DEFAULT SETTINGS ***/
+// ================== START defaultSettings ==================
 const defaultSettings = {
   service: {
-    top: 17,
+    top: 20,
     left: 58,
-    rotate: 8,
+    rotate: 8.5,
     scale: 3.3,
     fontSize: 17,
     fontFamily: "var(--font-geist-sans)",
@@ -70,10 +70,10 @@ const defaultSettings = {
     glowColor: "#b51a00",
     glowStrength: 0.6,
     gap: 0.9,
-    houseScale: 1.7,
-    background: "house-sketch.jpg",
+    houseScale: 1.3,
+    background: "house-sketch1.jpeg",
     textColor: "#000000",
-    doorTop: 0,    // ikke i bruk men definert for TS
+    doorTop: 0,
     doorLeft: 0,
   },
   ventilasjon: {
@@ -96,8 +96,8 @@ const defaultSettings = {
     houseScale: 1,
     background: "house-sketch.jpg",
     textColor: "#000000",
-    doorTop: 85.5,
-    doorLeft: 32,
+    doorTop: 86.5,
+    doorLeft: 29,
   },
   tomrer: {
     top: 61,
@@ -119,11 +119,11 @@ const defaultSettings = {
     houseScale: 1,
     background: "house-sketch.jpg",
     textColor: "#000000",
-    doorTop: 86,
-    doorLeft: 60,
+    doorTop: 87,
+    doorLeft: 58,
   },
   nordic: {
-    top: 63,
+    top: 64,
     left: 83.5,
     rotate: 2.8,
     scale: 1.8,
@@ -142,13 +142,11 @@ const defaultSettings = {
     houseScale: 1,
     background: "house-sketch.jpg",
     textColor: "#000000",
-    doorTop: 86,
-    doorLeft: 84,
+    doorTop: 88,
+    doorLeft: 83,
   },
 };
-
-
-
+// ================== END defaultSettings ==================
 // ===== START STATE BLOKK =====
 export default function HomePage() {
   /*** STATE ***/
