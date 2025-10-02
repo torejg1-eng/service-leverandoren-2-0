@@ -1,15 +1,23 @@
 @import "tailwindcss";
 
+/* === Variabler === */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --font-geist-sans: "Geist Sans", Arial, sans-serif;
+  --font-geist-mono: "Geist Mono", "Courier New", monospace;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Default shadow/glow values */
+  --shadow-x: 0px;
+  --shadow-y: 0px;
+  --shadow-blur: 0px;
+  --depth: 0px;
+  --glow-strength: 0.6;
+  --glow-rgb: 255,255,255;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +31,112 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* === Wave Animation === */
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.animate-wave { animation: wave 1.5s infinite ease-in-out; }
+
+/* ===== START REPLACE: text-with-shadow ===== */
+/* === Base + dynamic Shadow (fra slider + depth) === */
+.text-with-shadow {
+  /* Vanlig text-shadow (for solide tekster) */
+  text-shadow:
+    var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0,0,0,0.5),
+    var(--depth) var(--depth) calc(var(--depth) * 2) rgba(0,0,0,0.4);
+
+  /* Fallback for gradient-tekst (background-clip + transparent fill) */
+  filter:
+    drop-shadow(var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0,0,0,0.5))
+    drop-shadow(var(--depth) var(--depth) calc(var(--depth) * 2) rgba(0,0,0,0.4));
+}
+
+/* Sørg for at animerte bokstav-spans arver skyggen */
+.text-with-shadow span {
+  text-shadow: inherit;
+  filter: inherit;
+}
+/* === Glow Light === */
+@keyframes glow-light {
+  0%, 100% {
+    text-shadow:
+      var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0,0,0,0.5),
+      var(--depth) var(--depth) calc(var(--depth) * 2) rgba(0,0,0,0.4),
+      0 0 calc(6px * var(--glow-strength)) rgba(var(--glow-rgb), 0.6),
+      0 0 calc(12px * var(--glow-strength)) rgba(var(--glow-rgb), 0.4);
+  }
+  50% {
+    text-shadow:
+      var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0,0,0,0.5),
+      var(--depth) var(--depth) calc(var(--depth) * 2) rgba(0,0,0,0.4),
+      0 0 calc(12px * var(--glow-strength)) rgba(var(--glow-rgb), 0.9),
+      0 0 calc(24px * var(--glow-strength)) rgba(var(--glow-rgb), 0.6);
+  }
+}
+.animate-glow-light { animation: glow-light 2.5s ease-in-out infinite; }
+
+/* === Glow Dark === */
+@keyframes glow-dark {
+  0%, 100% {
+    text-shadow:
+      var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0,0,0,0.5),
+      var(--depth) var(--depth) calc(var(--depth) * 2) rgba(0,0,0,0.4),
+      0 0 calc(6px * var(--glow-strength)) rgba(0,0,0,0.6),
+      0 0 calc(12px * var(--glow-strength)) rgba(0,0,0,0.4);
+  }
+  50% {
+    text-shadow:
+      var(--shadow-x) var(--shadow-y) var(--shadow-blur) rgba(0,0,0,0.5),
+      var(--depth) var(--depth) calc(var(--depth) * 2) rgba(0,0,0,0.4),
+      0 0 calc(12px * var(--glow-strength)) rgba(0,0,0,0.9),
+      0 0 calc(24px * var(--glow-strength)) rgba(0,0,0,0.6);
+  }
+}
+.animate-glow-dark { animation: glow-dark 2.5s ease-in-out infinite; }
+
+/* === Tekstskarphet === */
+.text-sharp {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: geometricPrecision;
+}
+
+/* === Gradient Tekster === */
+.gradient-silverblue { background: linear-gradient(90deg, #d9d9d9, #3b82f6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-gold { background: linear-gradient(90deg, #facc15, #f59e0b); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-neon { background: linear-gradient(90deg, #22d3ee, #a855f7, #ef4444); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-subtle { background: linear-gradient(90deg, #f5f5f5, #9ca3af); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-red { background: linear-gradient(90deg, #ff0000, #ff4444); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-green { background: linear-gradient(90deg, #22c55e, #15803d); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-blue { background: linear-gradient(90deg, #3b82f6, #1e40af); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-purple { background: linear-gradient(90deg, #a855f7, #6b21a8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-pink { background: linear-gradient(90deg, #ec4899, #be185d); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-orange { background: linear-gradient(90deg, #f97316, #c2410c); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-cyan { background: linear-gradient(90deg, #06b6d4, #0e7490); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.gradient-gray { background: linear-gradient(90deg, #9ca3af, #374151); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+
+/* === Metalliske gradienter === */
+.metal-silver { background: linear-gradient(90deg, #e5e7eb, #9ca3af, #f9fafb); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.metal-gold { background: linear-gradient(90deg, #fbbf24, #f59e0b, #fde047); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.metal-bronze { background: linear-gradient(90deg, #92400e, #b45309, #d97706); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.metal-copper { background: linear-gradient(90deg, #ea580c, #dc2626, #f97316); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.metal-rose { background: linear-gradient(90deg, #f43f5e, #ec4899, #fda4af); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.metal-steel { background: linear-gradient(90deg, #64748b, #475569, #cbd5e1); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.metal-titanium { background: linear-gradient(90deg, #6b7280, #374151, #d1d5db); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+.metal-emerald { background: linear-gradient(90deg, #059669, #047857, #6ee7b7); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+
+/* === Solide farger === */
+.solid-white { color: #ffffff; }
+.solid-black { color: #000000; }
+.solid-red   { color: #ef4444; }
+.solid-blue  { color: #3b82f6; }
+.solid-green { color: #22c55e; }
+.solid-yellow{ color: #eab308; }
+
+/* === Responsive justeringer === */
+@media (max-width: 768px) {
+  .responsive-h1 { font-size: 0.8em; }
 }
