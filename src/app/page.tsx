@@ -1,917 +1,388 @@
- "use client";
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { Menu, X } from "lucide-react";
+// === START FULL FIXED: src/app/page.tsx ===
+"use client";
+import {
+  Wrench,
+  Wind,
+  Radiation,
+  Lightbulb,
+  Phone,
+  Mail,
+  MapPin,
+  ArrowRight,
+  PlayCircle,
+  Building2,
+  Hammer,
+} from "lucide-react";
 
-// ================== START RESPONSIVE SETTINGS ==================
-function useResponsiveSettings(settings: any) {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768); // <768px = mobil
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  // Lag en kopi og juster hvis mobil
-  const adjusted = { ...settings };
-  if (isMobile) {
-    adjusted.scale = adjusted.scale * 0.6;       // mindre hus
-    adjusted.fontSize = adjusted.fontSize * 0.7; // mindre tekst
-    adjusted.top = adjusted.top * 1.1;           // flytt litt ned
-  }
-
-  return adjusted;
-}
-// ================== END RESPONSIVE SETTINGS ==================
-
-
-// ===== START TextConfig interface =====
-interface TextConfig {
-  // Posisjon og transformasjon
-  top: number;
-  left: number;
-  rotate: number;
-  scale: number;
-  houseScale: number;
-  gap: number;
-
-  // Tekststil
-  fontSize: number;
-  fontFamily: string;
-  gradient: string;
-  textColor: string;
-  sharp: boolean;
-
-  // Glow / skyggeeffekter
-  glow: boolean;
-  glowColor: string;
-  glowStrength: number;
-  depth: number;
-  shadowX: number;
-  shadowY: number;
-  shadowBlur: number;
-
-  // Bakgrunn
-  background: string;
-
-  // Dør-posisjonering
-  doorTop: number;
-  doorLeft: number;
-}
-// ===== END TextConfig interface =====
-
-/*** HEX → RGB helper ***/
-function hexToRgbTuple(hex: string = "#ffffff") {
-  let cleaned = hex.replace("#", "");
-  if (cleaned.length === 3) {
-    cleaned = cleaned.split("").map((c) => c + c).join("");
-  }
-  const num = parseInt(cleaned, 16);
-  const r = (num >> 16) & 255;
-  const g = (num >> 8) & 255;
-  const b = num & 255;
-  return `${r}, ${g}, ${b}`;
-}
-// ================== START defaultSettings ==================
-const defaultSettings = {
-  service: {
-    top: 20,
-    left: 58,
-    rotate: 8.5,
-    scale: 3.3,
-    fontSize: 17,
-    fontFamily: "var(--font-geist-sans)",
-    gradient: "solid-yellow",
-    glow: true,
-    depth: 1,
-    shadowX: -2,
-    shadowY: 1,
-    shadowBlur: 1,
-    sharp: false,
-    glowColor: "#b51a00",
-    glowStrength: 0.6,
-    gap: 0.3,
-    houseScale: 1.3,
-    background: "house-sketch1.jpeg",
-    textColor: "#000000",
-    doorTop: 0,
-    doorLeft: 0,
-  },
-  ventilasjon: {
-    top: 58,
-    left: 29.5,
-    rotate: 2.8,
-    scale: 1.8,
-    fontSize: 15,
-    fontFamily: "var(--font-geist-sans)",
-    gradient: "solid-yellow",
-    glow: true,
-    depth: 1,
-    shadowX: -2,
-    shadowY: 1,
-    shadowBlur: 0,
-    sharp: false,
-    glowColor: "#ffd877",
-    glowStrength: 0.6,
-    gap: 0,
-    houseScale: 1,
-    background: "house-sketch.jpg",
-    textColor: "#000000",
-    doorTop: 86.5,
-    doorLeft: 29,
-  },
-  tomrer: {
-    top: 61,
-    left: 58,
-    rotate: 3,
-    scale: 1.8,
-    fontSize: 15,
-    fontFamily: "var(--font-geist-sans)",
-    gradient: "solid-yellow",
-    glow: true,
-    depth: 1,
-    shadowX: -2,
-    shadowY: 1,
-    shadowBlur: 0,
-    sharp: false,
-    glowColor: "#ffc677",
-    glowStrength: 0.6,
-    gap: 0,
-    houseScale: 1,
-    background: "house-sketch.jpg",
-    textColor: "#000000",
-    doorTop: 87,
-    doorLeft: 58,
-  },
-  nordic: {
-    top: 64,
-    left: 83.5,
-    rotate: 2.8,
-    scale: 1.8,
-    fontSize: 15,
-    fontFamily: "var(--font-geist-sans)",
-    gradient: "solid-yellow",
-    glow: true,
-    depth: 1,
-    shadowX: -2,
-    shadowY: 1,
-    shadowBlur: 0,
-    sharp: false,
-    glowColor: "#ffa57d",
-    glowStrength: 0.6,
-    gap: 0,
-    houseScale: 1,
-    background: "house-sketch.jpg",
-    textColor: "#000000",
-    doorTop: 88,
-    doorLeft: 83,
-  },
-};
-// ================== END defaultSettings ==================
-// ================== START PAGE ==================
-export default function Page() {
-  // 📌 Responsive versjoner av hver seksjon
-  const serviceSettings = useResponsiveSettings(defaultSettings.service);
-  const ventilasjonSettings = useResponsiveSettings(defaultSettings.ventilasjon);
-  const tomrerSettings = useResponsiveSettings(defaultSettings.tomrer);
-  const nordicSettings = useResponsiveSettings(defaultSettings.nordic);
-
-  return (
-    <main className="min-h-screen bg-gray-100">
-      {/* === Service === */}
-      <div
-        style={{
-          position: "absolute",
-          top: `${serviceSettings.top}%`,
-          left: `${serviceSettings.left}%`,
-          transform: `rotate(${serviceSettings.rotate}deg) scale(${serviceSettings.scale})`,
-          fontSize: `${serviceSettings.fontSize}px`,
-          color: serviceSettings.textColor,
-        }}
-      >
-        Service
-      </div>
-
-      {/* === Ventilasjon === */}
-      <div
-        style={{
-          position: "absolute",
-          top: `${ventilasjonSettings.top}%`,
-          left: `${ventilasjonSettings.left}%`,
-          transform: `rotate(${ventilasjonSettings.rotate}deg) scale(${ventilasjonSettings.scale})`,
-          fontSize: `${ventilasjonSettings.fontSize}px`,
-          color: ventilasjonSettings.textColor,
-        }}
-      >
-        Ventilasjon
-      </div>
-
-      {/* === Tømrer === */}
-      <div
-        style={{
-          position: "absolute",
-          top: `${tomrerSettings.top}%`,
-          left: `${tomrerSettings.left}%`,
-          transform: `rotate(${tomrerSettings.rotate}deg) scale(${tomrerSettings.scale})`,
-          fontSize: `${tomrerSettings.fontSize}px`,
-          color: tomrerSettings.textColor,
-        }}
-      >
-        Tømrer
-      </div>
-
-      {/* === Nordic Smart === */}
-      <div
-        style={{
-          position: "absolute",
-          top: `${nordicSettings.top}%`,
-          left: `${nordicSettings.left}%`,
-          transform: `rotate(${nordicSettings.rotate}deg) scale(${nordicSettings.scale})`,
-          fontSize: `${nordicSettings.fontSize}px`,
-          color: nordicSettings.textColor,
-        }}
-      >
-        Nordic Smart
-      </div>
-    </main>
-  );
-}
-// ================== END PAGE ==================
-
-// ===== START STATE BLOKK =====
 export default function HomePage() {
-  /*** STATE ***/
-  const [openMenu, setOpenMenu] = useState(false);
-  const [openEditor, setOpenEditor] = useState(false);
-  const [settings, setSettings] = useState(defaultSettings);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activePreset, setActivePreset] = useState(() => {
-    // hent sist brukt preset fra localStorage
-    if (typeof window !== "undefined") {
-      const savedIdx = localStorage.getItem("activePreset");
-      return savedIdx ? parseInt(savedIdx, 10) : 0;
-    }
-    return 0;
-  });
-  const menuRef = useRef<HTMLDivElement>(null);
-  const panelScrollRef = useRef(0);
-  const panelRef = useRef<HTMLDivElement>(null);
-// ===== SLUTT STATE BLOKK =====
+  const year = new Date().getFullYear();
+  return (
+    <main className="min-h-screen bg-neutral-950 text-neutral-50 [--bg-dark:#0b0b0c] [--bg-soft:#121418] [--emerald:#10b981] [--amber:#f59e0b]">
+      {/* kompensasjon for fast header */}
+      <div className="h-28 sm:h-32"></div>
 
-  /*** OPPDAG SYSTEM TEMA ***/
-  useEffect(() => {
-    const matcher = window.matchMedia("(prefers-color-scheme: dark)");
-    setIsDarkMode(matcher.matches);
-    const listener = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
-    matcher.addEventListener("change", listener);
-    return () => matcher.removeEventListener("change", listener);
-  }, []);
+{/* HERO */}
+<div className="h-28 sm:h-32"></div>
 
-  // === LAST INN LAGRET PRESET VED START ===
-useEffect(() => {
-  const STORAGE_KEYS = [
-    "textSettings_preset1",
-    "textSettings_preset2",
-    "textSettings_preset3",
-    "textSettings_preset4",
-    "textSettings_preset5",
-  ];
+<section
+  className="relative isolate overflow-hidden bg-gradient-to-b from-neutral-900 via-gray-800 to-gray-700"
+  style={{ marginTop: "var(--header-height, 8rem)" }}
+>
+  {/* Bakgrunnsbilde med gradientoverlay */}
+  <div className="absolute inset-0">
+    <div className="h-full w-full bg-[url('/images/hero-stue.webp')] bg-cover bg-center opacity-20" />
+    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-gray-800" />
+  </div>
 
-  // les sist brukt preset, fallback til 0
-  const savedPreset = localStorage.getItem("activePreset");
-  const idx = savedPreset ? parseInt(savedPreset, 10) : 0;
-  setActivePreset(idx);
-
-  const saved = localStorage.getItem(STORAGE_KEYS[idx]);
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      setSettings({
-        service: { ...defaultSettings.service, ...parsed.service },
-        ventilasjon: { ...defaultSettings.ventilasjon, ...parsed.ventilasjon },
-        tomrer: { ...defaultSettings.tomrer, ...parsed.tomrer },
-        nordic: { ...defaultSettings.nordic, ...parsed.nordic },
-      });
-    } catch {
-      setSettings(defaultSettings);
-    }
-  } else {
-    setSettings(defaultSettings);
-  }
-}, []); // kjør kun første gang
-
-
-  /*** ESC-LUKKING MENY ***/
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpenMenu(false);
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, []);
-
-  /*** KLIKK UTENFOR MENY ***/
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpenMenu(false);
-      }
-    }
-    if (openMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openMenu]);
-
-  /*** HOTKEY EDITOR (Shift+Cmd+E) ***/
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.shiftKey && e.metaKey && e.key.toLowerCase() === "e") {
-        setOpenEditor((prev) => !prev);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
-
-  /*** RENDER TEKST ***/
-interface TextConfig {
-  // Posisjon og transformasjon
-  top: number;
-  left: number;
-  rotate: number;
-  scale: number;
-  houseScale: number; // alltid definert
-  gap: number;        // alltid definert
-
-  // Tekststil
-  fontSize: number;
-  fontFamily: string;
-  gradient: string;
-  textColor: string;
-  sharp: boolean;
-
-  // Glow / skyggeeffekter
-  glow: boolean;
-  glowColor: string;
-  glowStrength: number;
-  depth: number;
-  shadowX: number;
-  shadowY: number;
-  shadowBlur: number;
-
-  // Bakgrunn
-  background: string;
-
-  // Dør-posisjonering
-  doorTop: number;
-  doorLeft: number;
-  // legg til flere hvis nødvendig:
-  // doorRight: number;
-  // doorBottom: number;
-}
-
-const renderText = (text: string, config: TextConfig, withGap = false) => (
-
-<h1
-  className={`absolute font-bold text-with-shadow responsive-h1 ${config.gradient} ${
-    config.sharp ? "text-sharp" : ""
-  } ${
-    config.glow
-      ? isDarkMode
-        ? "animate-glow-dark"
-        : "animate-glow-light"
-      : ""
-  }`}
-      style={{
-        top: `${config.top}%`,
-        left: `${config.left}%`,
-        transform: `translate(-50%, -50%) rotate(${config.rotate}deg) scale(${config.scale})`,
-        transformOrigin: "center",
-        fontSize: `${config.fontSize}px`,
-        fontFamily: config.fontFamily,
-        zIndex: 20,
-        pointerEvents: "none",
-["--shadow-x" as string]: `${config.shadowX}px`,
-["--shadow-y" as string]: `${config.shadowY}px`,
-["--shadow-blur" as string]: `${config.shadowBlur}px`,
-["--depth" as string]: `${config.depth}px`,
-["--glow-color" as string]: config.glowColor,
-["--glow-strength" as string]: config.glowStrength,
-["--glow-rgb" as string]: hexToRgbTuple(config.glowColor),
-      }}
-    >
-      {text.split("").map((char: string, i: number) => (
-        <span
-          key={i}
-          className="inline-block animate-wave"
-          style={{ animationDelay: `${i * 0.08}s` }}
-        >
-          {char}
-        </span>
-      ))}
-      {withGap && (
-        <>
-          <span style={{ display: "inline-block", width: `${(config.gap ?? 0.9)}em` }} />
-          {"AS".split("").map((char, i) => (
-            <span
-              key={`as-${i}`}
-              className="inline-block animate-wave"
-              style={{ animationDelay: `${(i + 30) * 0.08}s` }}
-            >
-              {char}
-            </span>
-          ))}
-        </>
-      )}
+  {/* Innhold */}
+  <div className="relative z-10 mx-auto max-w-6xl px-6 pt-36 pb-56 sm:pt-44 sm:pb-64 flex flex-col items-center text-center">
+    <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight">
+      <span className="block text-white drop-shadow-md">Bygg, teknologi og håndverk gir:</span>
+      <span className="mt-3 block bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
+        -komfort og kvalitet som varer
+      </span>
     </h1>
-  );
 
-// ===== START EditorPanel (full med presets + fargevelger + skygge) =====
-const EditorPanel = ({
-  settings,
-  setSettings,
-  activePreset,
-  setActivePreset,
-}: {
-  settings: typeof defaultSettings;
-  setSettings: React.Dispatch<React.SetStateAction<typeof defaultSettings>>;
-  activePreset: number;
-  setActivePreset: React.Dispatch<React.SetStateAction<number>>;
-}) => {
-//// START PATCH page.tsx (EditorPanel adjust)
-type ConfigKey = keyof typeof defaultSettings;
-type ConfigField = keyof TextConfig;
+    <p className="mt-6 max-w-3xl text-lg text-gray-200 drop-shadow-sm">
+      Service-Leverandøren AS leverer helhetlige løsninger: tømrerarbeid, spesialprosjekter,
+      ventilasjon, radon og komfort. Én aktør – fra befaring til ferdig resultat.
+    </p>
 
-const adjust = (key: ConfigKey, field: ConfigField, delta: number) => {
-  const cfg = settings[key] as TextConfig;
-  const current = cfg[field];
-
-  if (typeof current === "number") {
-    setSettings({
-      ...settings,
-      [key]: { ...cfg, [field]: current + delta },
-    });
-  } else {
-    console.warn(`Feltet ${String(field)} er ikke numerisk, hopper over justering`);
-  }
-};
-//// END PATCH page.tsx
-
-  const STORAGE_KEYS = [
-    "textSettings_preset1",
-    "textSettings_preset2",
-    "textSettings_preset3",
-    "textSettings_preset4",
-    "textSettings_preset5",
-  ];
-
-  const gradients = [
-    "solid-white","solid-black","solid-red","solid-blue","solid-green","solid-yellow",
-    "gradient-silverblue","gradient-gold","gradient-neon","gradient-subtle",
-    "gradient-red","gradient-green","gradient-blue","gradient-purple","gradient-pink",
-    "gradient-orange","gradient-cyan","gradient-gray",
-  ];
-
-  const glowSwatches = [
-    "#ffffff","#eab308","#ef4444","#22c55e","#3b82f6",
-    "#a855f7","#ec4899","#06b6d4","#f97316","#94a3b8",
-  ];
-
-const Section = ({
-  keyName,
-  title,
-}: {
-  keyName: keyof typeof defaultSettings;
-  title: string;
-}) => {
-  const cfg = settings[keyName];
-
-  const safeId = `${keyName}-${title.replace(/\s+/g, "-")}`;
-
-  return (
-    <div className="mb-3 border-t border-gray-700 pt-2 text-xs">
-      <h3 className="font-semibold mb-1 flex justify-between items-center text-sm">
-        {title}
-        <button
-          onClick={() => {
-            const next = {
-              ...settings,
-              [keyName]: defaultSettings[keyName as keyof typeof defaultSettings],
-            };
-            setSettings(next);
-            localStorage.setItem(STORAGE_KEYS[activePreset], JSON.stringify(next));
-          }}
-          className="ml-1 px-1 py-0.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px]"
-        >
-          Reset del
-        </button>
-      </h3>
-
-      {/* Justeringsknapper */}
-      {[
-        { label: "Top", field: "top", step: 1 },
-        { label: "Left", field: "left", step: 1 },
-        { label: "Rotate", field: "rotate", step: 0.5 },
-        { label: "Scale", field: "scale", step: 0.1 },
-        { label: "Font", field: "fontSize", step: 1 },
-        { label: "Depth", field: "depth", step: 1 },
-        { label: "Shad X", field: "shadowX", step: 1 },
-        { label: "Shad Y", field: "shadowY", step: 1 },
-        { label: "Blur", field: "shadowBlur", step: 1 },
-        { label: "Gap", field: "gap", step: 0.1 },
-      ].map((ctrl) => (
-        <div
-          key={ctrl.field}
-          className="flex items-center justify-between mb-1 text-[10px]"
-        >
-<span>
-  {ctrl.label}: {(cfg as TextConfig)[ctrl.field as keyof TextConfig]}
-</span>
-          <div className="flex gap-1">
-            <button
-              onClick={() => adjust(keyName, ctrl.field as keyof TextConfig, -ctrl.step)}
-              className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-            >
-              −
-            </button>
-            <button
-              onClick={() => adjust(keyName, ctrl.field as keyof TextConfig, ctrl.step)}
-              className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      ))}
-
-      {/* Dørjustering (kun ventilasjon/tømrer/nordic) */}
-      {["ventilasjon", "tomrer", "nordic"].includes(keyName) && (
-        <div className="mt-2">
-          <div className="flex items-center justify-between mb-1 text-[10px]">
-          <span>Dør-Top: {(cfg as TextConfig).doorTop}</span>
-            <div className="flex gap-1">
-              <button
-                onClick={() => adjust(keyName, "doorTop", -0.5)}
-                className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-              >
-                −
-              </button>
-              <button
-                onClick={() => adjust(keyName, "doorTop", 0.5)}
-                className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mb-1 text-[10px]">
-         <span>Dør-Left: {(cfg as TextConfig).doorLeft}</span>
-            <div className="flex gap-1">
-              <button
-                onClick={() => adjust(keyName, "doorLeft", -0.5)}
-                className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-              >
-                −
-              </button>
-              <button
-                onClick={() => adjust(keyName, "doorLeft", 0.5)}
-                className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-              >
-                +
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Fontvalg */}
-      <select
-        value={cfg.fontFamily}
-        onChange={(e) =>
-          setSettings({
-            ...settings,
-            [keyName]: { ...cfg, fontFamily: e.target.value },
-          })
-        }
-        className="w-full text-black px-1 py-0.5 rounded mb-1 text-xs"
-      >
-        <option value="var(--font-geist-sans)">Geist Sans</option>
-        <option value="var(--font-geist-mono)">Geist Mono</option>
-        <option value="sans-serif">Sans</option>
-        <option value="serif">Serif</option>
-        <option value="monospace">Monospace</option>
-        <option value="cursive">Cursive</option>
-      </select>
-
-      {/* Tekstfarge med knapp */}
-<label className="block mt-2 mb-1">Tekstfarge</label>
-<input
-  type="color"
-  value={cfg.textColor || "#ffffff"}
-  onChange={(e) =>
-    setSettings({
-      ...settings,
-      [keyName]: { ...cfg, textColor: e.target.value },
-    })
-  }
-  className="h-8 w-16 rounded cursor-pointer"
-/>
-
-
-      {/* Gradientvalg */}
-      <select
-        value={cfg.gradient}
-        onChange={(e) =>
-          setSettings({
-            ...settings,
-            [keyName]: { ...cfg, gradient: e.target.value, textColor: "" },
-          })
-        }
-        className="w-full text-black px-1 py-0.5 rounded mb-1 text-xs mt-2"
-      >
-        <option value="">Ingen gradient</option>
-        {gradients.map((g) => (
-          <option key={g} value={g}>
-            {g}
-          </option>
-        ))}
-      </select>
-
-      {/* Glow controls */}
-      <div className="mt-2 space-y-1">
-        <div className="flex items-center justify-between">
-          <span>Glow-farge</span>
-          <input
-            type="color"
-            value={cfg.glowColor || "#ffffff"}
-            onChange={(e) =>
-              setSettings({
-                ...settings,
-                [keyName]: { ...cfg, glowColor: e.target.value },
-              })
-            }
-            className="h-6 w-12 border rounded cursor-pointer"
-          />
-        </div>
-        <div className="flex items-center justify-between text-[10px]">
-          <span>Styrke: {cfg.glowStrength}</span>
-          <div className="flex gap-1">
-            <button
-              onClick={() => adjust(keyName, "glowStrength", -0.05)}
-              className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-            >
-              −
-            </button>
-            <button
-              onClick={() => adjust(keyName, "glowStrength", 0.05)}
-              className="px-1 bg-gray-700 hover:bg-gray-600 rounded"
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Toggles */}
-      <div className="flex gap-1 mt-1">
-        <button
-          className={`flex-1 px-1 py-0.5 rounded text-[10px] font-semibold ${
-            cfg.glow ? "bg-green-600" : "bg-gray-600"
-          }`}
-          onClick={() =>
-            setSettings({
-              ...settings,
-              [keyName]: { ...cfg, glow: !cfg.glow },
-            })
-          }
-        >
-          Glow
-        </button>
-        <button
-          className={`flex-1 px-1 py-0.5 rounded text-[10px] font-semibold ${
-            cfg.sharp ? "bg-green-600" : "bg-gray-600"
-          }`}
-          onClick={() =>
-            setSettings({
-              ...settings,
-              [keyName]: { ...cfg, sharp: !cfg.sharp },
-            })
-          }
-        >
-          Sharp
-        </button>
-      </div>
-
-      {/* Hus og bakgrunn (kun service) */}
-      {keyName === "service" && (
-        <>
-          <div className="flex items-center justify-between mt-2">
-            <span>Hus: {((cfg as TextConfig).houseScale ?? 1).toFixed(2)}x</span>
-            <div className="flex gap-1">
-              <button
-                onClick={() => adjust(keyName, "houseScale", -0.1)}
-                className="px-1 bg-gray-700 rounded"
-              >
-                −
-              </button>
-              <button
-                onClick={() => adjust(keyName, "houseScale", 0.1)}
-                className="px-1 bg-gray-700 rounded"
-              >
-                +
-              </button>
-            </div>
-          </div>
-<label className="block mt-2 mb-1">Bakgrunn</label>
-<select
-  value={(cfg as TextConfig).background || ""}
-  onChange={(e) =>
-    setSettings({
-      ...settings,
-      [keyName]: {
-        ...(cfg as TextConfig),
-        gap: (cfg as TextConfig).gap ?? 0,
-        houseScale: (cfg as TextConfig).houseScale ?? 1,
-        background: e.target.value,
-      } as TextConfig,
-    })
-  }
-  className="w-full text-black rounded px-1 text-xs"
->
-  <option value="house-sketch.jpg">Skisse</option>
-  <option value="house-sketch1.jpeg">Variant 1</option>
-  <option value="house-sketch2.jpeg">Variant 2</option>
-  <option value="house-sketch3.jpeg">Variant 3</option>
-  <option value="house-sketch4.jpeg">Variant 4</option>
-</select>
-        </>
-      )}
+    <div className="mt-8 flex flex-wrap justify-center items-center gap-6 text-sm text-gray-300">
+      <span className="flex items-center gap-2">
+        <Phone className="h-4 w-4" /> +47 469 25 236
+      </span>
+      <span className="flex items-center gap-2">
+        <Mail className="h-4 w-4" /> post@service-leverandoren.no
+      </span>
     </div>
-  );
-};
 
-  return (
-  <div className="fixed bottom-0 left-0 right-0 flex justify-between gap-2 z-50 p-2 pointer-events-none text-xs">
-
-      {/* Venstre panel */}
-      <div className="bg-black/90 p-2 rounded-lg text-white w-[420px] pointer-events-auto">
-        <h2 className="font-bold text-sm mb-2">⚙️ Service + Ventilasjon</h2>
-        <div className="flex gap-2 mb-2">
-          <select
-            value={activePreset}
-            onChange={(e) => {
-              const idx = parseInt(e.target.value, 10);
-              setActivePreset(idx);
-              const saved = localStorage.getItem(STORAGE_KEYS[idx]);
-              if (saved) setSettings(JSON.parse(saved));
-            }}
-            className="flex-1 text-black rounded px-1"
-          >
-            <option value={0}>Preset 1</option>
-            <option value={1}>Preset 2</option>
-            <option value={2}>Preset 3</option>
-            <option value={3}>Preset 4</option>
-            <option value={4}>Preset 5</option>
-          </select>
-<button
-  onClick={() => {
-    localStorage.setItem(STORAGE_KEYS[activePreset], JSON.stringify(settings));
-    localStorage.setItem("activePreset", activePreset.toString()); // husk valgt preset også
-    alert(`Lagret preset ${activePreset + 1}`);
-  }}
-  className="flex-1 px-2 py-1 bg-green-600 rounded text-xs"
->
-  💾 Lagre
-</button>
-        </div>
-        <Section keyName="service" title="Serviceleverandøren" />
-        <Section keyName="ventilasjon" title="Ventilasjon" />
-      </div>
-
-      {/* Høyre panel */}
-      <div className="bg-black/90 p-2 rounded-lg text-white w-[420px] pointer-events-auto">
-        <h2 className="font-bold text-sm mb-2">⚙️ Tømrer + Nordic</h2>
-        <Section keyName="tomrer" title="Tømrer" />
-        <Section keyName="nordic" title="Nordic Smart" />
-      </div>
-    </div>
-  );
-};
-// ===== END EditorPanel =====
-
-
-  /*** LINKS I MENYEN ***/
-  const links = [
-    { href: "/", text: "Hjem" },
-    { href: "/tomrer", text: "Tømrer" },
-    { href: "/ventilasjon", text: "Ventilasjon" },
-    { href: "/butikk", text: "Nettbutikk" },
-    { href: "/faktura", text: "Fakturaspørsmål" },
-    { href: "/om-oss", text: "Om oss" },
-    { href: "/kontakt", text: "Kontakt oss" },
-  ];
-
-  /*** HOVEDINNHOLD ***/
-  return (
-    <main
-      className="min-h-screen relative"
-      style={{ background: "var(--background)", color: "var(--foreground)" }}
+    {/* Kontaktknapp */}
+    <button
+      onClick={() => (window.location.href = "/kontakt")}
+      className="relative z-10 mt-10 bg-amber-500 hover:bg-amber-600 text-black font-semibold py-3 px-6 rounded shadow-md transition transform hover:scale-105"
+      style={{ marginBottom: "-1.5rem" }}
     >
-
-<section className="relative w-full max-w-6xl mx-auto aspect-[16/9]">
-{/* Bakgrunn + overlegg følger huset nøyaktig */}
-<div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-  {/* Denne beholderen har EXAKT samme boks som bildet,
-      og hele boksen skaleres 1:1 med houseScale */}
-  <div
-    className="relative inline-block h-full"
-    style={{
-      transform: `scale(${settings.service.houseScale ?? 1})`,
-      transformOrigin: "center",
-    }}
-  >
-<img
-  src={`/${settings.service.background}`}
-  alt="Hus"
-  style={{
-    transform: `scale(${settings.service.houseScale ?? 1})`,
-    maxHeight: "100%",
-    maxWidth: "100%",
-  }}
-/>
+      Kontakt oss
+    </button>
   </div>
-</div>
 
+  {/* Øvre skygge for header-glød */}
+  <div className="absolute top-0 left-0 w-full h-10 bg-gradient-to-b from-neutral-950/90 to-transparent z-40" />
 
-  {/* Store tekster */}
-  {renderText("SERVICELEVERANDØREN", settings.service, true)}
-  {renderText("Ventilasjon/Service", settings.ventilasjon)}
-  {renderText("Tømrer/Bygg", settings.tomrer)}
-  {renderText("Nordic Smart", settings.nordic)}
-
-{/* Klikkbare "dører" */}
-<Link
-  href="/ventilasjon"
-  className="group absolute -translate-x-1/2 -translate-y-1/2 z-50"
-  style={{
-    top: `${settings.ventilasjon.doorTop}%`,
-    left: `${settings.ventilasjon.doorLeft}%`,
-  }}
->
-  <div className="relative w-[140px] h-[230px] rounded-md ring-1 ring-white/25 shadow-[0_0_24px_rgba(255,255,255,0.12)] transition group-hover:ring-white/60 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] group-hover:bg-white/10">
-    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-black/80 text-white text-sm opacity-0 group-hover:opacity-100 transition">
-      Ventilasjon
-    </span>
-  </div>
-</Link>
-
-<Link
-  href="/tomrer"
-  className="group absolute -translate-x-1/2 -translate-y-1/2 z-50"
-  style={{
-    top: `${settings.tomrer.doorTop}%`,
-    left: `${settings.tomrer.doorLeft}%`,
-  }}
->
-  <div className="relative w-[130px] h-[211px] rounded-md ring-1 ring-white/25 shadow-[0_0_24px_rgba(255,255,255,0.12)] transition group-hover:ring-white/60 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] group-hover:bg-white/10">
-    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-black/80 text-white text-sm opacity-0 group-hover:opacity-100 transition">
-      Tømrer
-    </span>
-  </div>
-</Link>
-
-<Link
-  href="/butikk"
-  className="group absolute -translate-x-1/2 -translate-y-1/2 z-50"
-  style={{
-    top: `${settings.nordic.doorTop}%`,
-    left: `${settings.nordic.doorLeft}%`,
-  }}
->
-  <div className="relative w-[110px] h-[192px] rounded-md ring-1 ring-white/25 shadow-[0_0_24px_rgba(255,255,255,0.12)] transition group-hover:ring-white/60 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] group-hover:bg-white/10">
-    <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-black/80 text-white text-sm opacity-0 group-hover:opacity-100 transition">
-      Nettbutikk
-    </span>
-  </div>
-</Link>
-
+  {/* Nedre kontraststripe */}
+  <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500" />
 </section>
 
+{/* TJENESTER */}
+<section id="tjenester" className="bg-[var(--bg-soft)]">
+  <div className="mx-auto max-w-7xl px-4 py-8 md:py-10">
+    <Header
+      eyebrow="Tjenester"
+      title="Hva vi gjør"
+      text="Kombinerer håndverk og teknikk for varige løsninger med dokumentert kvalitet."
+    />
 
+    {/* ca. 2 cm mellom hvert kort */}
+    <div
+      className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+      style={{ gap: "32px" }}
+    >
+      <ServiceCard
+        icon={<Building2 className="h-6 w-6" />}
+        title="Bygg & rehabilitering"
+        desc="Oppussing, kjøkken, lydisolasjon og spesialtilpasninger."
+        accent="amber"
+      />
+      <ServiceCard
+        icon={<Wind className="h-6 w-6" />}
+        title="Ventilasjon & inneklima"
+        desc="Service, feilsøking og montering. Måling og innregulering."
+        accent="emerald"
+      />
+      <ServiceCard
+        icon={<Radiation className="h-6 w-6" />}
+        title="Radon & ENØK"
+        desc="Radonmåling, tetting og energieffektive tiltak."
+        accent="emerald"
+      />
+      <ServiceCard
+        icon={<Lightbulb className="h-6 w-6" />}
+        title="Komfort & design"
+        desc="Hjemmekino, lys, integrerte løsninger og spesialbygg."
+        accent="amber"
+      />
+    </div>
+  </div>
+</section>
 
+{/* PROSJEKTER */}
+<section className="bg-neutral-900/40">
+  <div className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+    <Header eyebrow="Utvalgte prosjekter" title="Detaljfokus i praksis" />
 
-      {/* Editor */}
-{openEditor && (
-  <EditorPanel
-    settings={settings}
-    setSettings={setSettings}
-    activePreset={activePreset}
-    setActivePreset={setActivePreset}
-  />
-)}
+    <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <ProjectCard
+        img="/images/prosjekter/forside-prosjekt.webp"
+        title="Prosjektbilder"
+        tag="Utførte jobber"
+        href="/prosjekter"
+      />
+    </div> {/* 👈 denne manglet */}
+
+    <div className="mt-10">
+      <a href="/prosjekter" className="btn-outline">
+        Se alle prosjekter <ArrowRight className="h-5 w-5" />
+      </a>
+    </div>
+  </div>
+</section>
+
+      {/* OM OSS */}
+      <section className="bg-[var(--bg-soft)]">
+        <div className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+          <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
+            <div className="order-2 md:order-1">
+              <Eyebrow text="Om oss" />
+              <h3 className="text-3xl font-bold md:text-4xl">
+                Teknisk kompetanse + håndverk
+              </h3>
+              <p className="mt-4 text-neutral-300">
+                Vi leverer solide løsninger for hjem og næring – fra bygg og
+                spesialtilpasninger til ventilasjon, radon og komfort. Vi
+                dokumenterer underveis og avslutter når alt er “spot on”.
+              </p>
+              <ul className="mt-6 space-y-3 text-neutral-300">
+                <li className="flex items-start gap-3">
+                  <PlayCircle className="mt-0.5 h-5 w-5 text-emerald-400" />
+                  Varig kvalitet, riktig materialvalg og ryddig fremdrift.
+                </li>
+                <li className="flex items-start gap-3">
+                  <PlayCircle className="mt-0.5 h-5 w-5 text-emerald-400" />
+                  Inneklima- og ENØK-tankegang i alle leveranser.
+                </li>
+                <li className="flex items-start gap-3">
+                  <PlayCircle className="mt-0.5 h-5 w-5 text-emerald-400" />
+                  Én kontaktperson fra befaring til ferdig prosjekt.
+                </li>
+              </ul>
+            </div>
+
+            <div className="order-1 md:order-2">
+              <div className="relative overflow-hidden rounded-2xl bg-neutral-800 shadow-2xl ring-1 ring-neutral-700">
+                <img
+                  src="/images/omoss-arbeid.webp"
+                  alt="Arbeid i bolig"
+                  className="h-80 w-full object-cover md:h-[28rem]"
+                />
+                <div className="absolute bottom-4 left-4 flex items-center gap-3 rounded-xl bg-neutral-900/85 px-3 py-2 text-sm">
+                  <Wrench className="h-4 w-4 text-emerald-400" /> Dokumentert
+                  utførelse
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* KONTAKT */}
+      <section id="kontakt" className="relative bg-neutral-900/40">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(800px_circle_at_center,rgba(16,185,129,0.08),transparent_60%)]" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-28 sm:py-36 text-shadow-xl">
+          <Header
+            eyebrow="Kontakt"
+            title="Gratis befaring & rådgivning"
+            text="Beskriv kort hva du ønsker hjelp til – bygg, ventilasjon, radon eller komfort – så tar vi kontakt."
+          />
+
+          <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="md:col-span-2">
+              <form
+                action="https://formspree.io/f/xqkoyqza"
+                method="POST"
+                className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+              >
+                <Input name="navn" placeholder="Navn" required />
+                <Input name="telefon" placeholder="Telefon" type="tel" required />
+                <Input
+                  name="epost"
+                  placeholder="E-post (valgfritt)"
+                  type="email"
+                  className="sm:col-span-2"
+                />
+                <Textarea
+                  name="beskrivelse"
+                  placeholder="Hva kan vi hjelpe med?"
+                  rows={4}
+                  required
+                  className="sm:col-span-2"
+                />
+                <button className="btn-emerald sm:w-max" aria-label="Send forespørsel">
+                  Send forespørsel <ArrowRight className="h-5 w-5" />
+                </button>
+              </form>
+            </div>
+
+            <aside className="rounded-2xl border border-neutral-800 bg-neutral-950 p-6">
+              <h4 className="text-xl font-semibold">Direkte kontakt</h4>
+              <div className="mt-4 space-y-3 text-neutral-300">
+                <p className="flex items-center gap-2">
+                  <Phone className="h-5 w-5 text-emerald-400" />
+                  <a href="tel:+4746925236" className="hover:underline">
+                    +47 469 25 236
+                  </a>
+                </p>
+                <p className="flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-emerald-400" />
+                  <a
+                    href="mailto:post@service-leverandoren.no"
+                    className="hover:underline"
+                  >
+                    post@service-leverandoren.no
+                  </a>
+                </p>
+                <p className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-emerald-400" /> Skjeberg, Østfold
+                </p>
+              </div>
+
+              <div className="mt-6 rounded-xl bg-neutral-900 p-4 text-sm text-neutral-400">
+                Vi dekker hele Østfold og nærområdene. Kveldsbefaring etter avtale.
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-2 text-xs text-neutral-400">
+                <Badge icon={<Hammer className="h-3.5 w-3.5" />} text="Bygg" color="amber" />
+                <Badge icon={<Wind className="h-3.5 w-3.5" />} text="Ventilasjon" color="emerald" />
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-neutral-800 bg-neutral-950/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-950/80">
+        <div className="mx-auto max-w-7xl px-4 py-10 text-sm text-neutral-400">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
+            <p>© {year} Service-Leverandøren AS. Alle rettigheter.</p>
+            <nav className="flex flex-wrap gap-6">
+              <a href="/prosjekter" className="hover:text-neutral-200">Prosjekter</a>
+              <a href="/tjenester" className="hover:text-neutral-200">Tjenester</a>
+              <a href="/om-oss" className="hover:text-neutral-200">Om oss</a>
+              <a href="/personvern" className="hover:text-neutral-200">Personvern</a>
+            </nav>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
+
+/* ---------- Reusable bits ---------- */
+
+function Header({ eyebrow, title, text }: { eyebrow?: string; title: string; text?: string }) {
+  return (
+    <>
+      {eyebrow && <Eyebrow text={eyebrow} />}
+      <h2 className="text-3xl font-bold md:text-4xl">{title}</h2>
+      {text && <p className="mt-3 max-w-2xl text-neutral-300">{text}</p>}
+    </>
+  );
+}
+
+function Eyebrow({ text }: { text: string }) {
+  return (
+    <div className="mb-8 flex items-center gap-3 text-emerald-400">
+      <div className="h-0.5 w-10 bg-emerald-500" />
+      <span className="text-sm font-semibold uppercase tracking-widest">{text}</span>
+    </div>
+  );
+}
+
+function ServiceCard({
+  icon,
+  title,
+  desc,
+  accent = "emerald",
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  accent?: "emerald" | "amber";
+}) {
+  const accentClasses =
+    accent === "amber"
+      ? "text-amber-300 ring-amber-500/30"
+      : "text-emerald-300 ring-emerald-500/30";
+  return (
+    <div className="group rounded-2xl border border-neutral-800 bg-neutral-900/40 p-6 transition will-change-transform hover:-translate-y-1 hover:bg-neutral-900">
+      <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-800 ring-1 ${accentClasses}`}>
+        {icon}
+      </div>
+      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+      <p className="mt-2 text-neutral-300">{desc}</p>
+    </div>
+  );
+}
+
+function ProjectCard({ img, title, tag }: { img: string; title: string; tag: string }) {
+  return (
+    <a href="/prosjekter" className="group block overflow-hidden rounded-2xl bg-neutral-800 ring-1 ring-neutral-700">
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
+        <img
+          src={img}
+          alt={title}
+          className="h-full w-full scale-[1.01] transform object-cover transition duration-500 group-hover:scale-105"
+        />
+        <span className="absolute left-3 top-3 rounded-full bg-neutral-900/80 px-3 py-1 text-xs font-medium text-neutral-100 ring-1 ring-neutral-700">
+          {tag}
+        </span>
+      </div>
+      <div className="p-4">
+        <p className="text-base font-semibold text-neutral-100">{title}</p>
+        <p className="mt-1 text-sm text-neutral-400">Se flere bilder og detaljer</p>
+      </div>
+    </a>
+  );
+}
+
+function Badge({
+  icon,
+  text,
+  color = "emerald",
+}: {
+  icon?: React.ReactNode;
+  text: string;
+  color?: "emerald" | "amber";
+}) {
+  const base =
+    color === "amber"
+      ? "bg-amber-500/10 text-amber-300 ring-amber-400/30"
+      : "bg-emerald-500/10 text-emerald-300 ring-emerald-400/30";
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 ring-1 ${base}`}>
+      {icon}
+      {text}
+    </span>
+  );
+}
+
+function Input({ className = "", ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      className={`rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 outline-none ring-emerald-300 placeholder:text-neutral-500 focus:ring-2 ${className}`}
+    />
+  );
+}
+
+function Textarea({ className = "", ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      {...props}
+      className={`rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-3 outline-none ring-emerald-300 placeholder:text-neutral-500 focus:ring-2 ${className}`}
+    />
+  );
+}
+
+// === END FULL FIXED FILE ===

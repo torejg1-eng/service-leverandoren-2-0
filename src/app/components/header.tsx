@@ -1,8 +1,9 @@
+// === FIXED & CENTERED: src/app/components/header.tsx ===
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 const links = [
@@ -10,85 +11,104 @@ const links = [
   { href: "/ventilasjon", text: "Ventilasjon" },
   { href: "/tomrer", text: "Tømrer" },
   { href: "/butikk", text: "Nettbutikk" },
-  { href: "/faktura", text: "Faktura" },
-  { href: "/om-oss", text: "Om oss" },
   { href: "/kontakt", text: "Kontakt" },
 ];
 
+// 🎨 Justerbare verdier
+const headerStyle = {
+  bgColor: "rgba(15, 15, 15, 0.9)",
+  textColor: "#ffffff",
+  linkColor: "#e5e5e5",
+  linkHover: "#00ffbb",
+  borderColor: "rgba(255,255,255,0.15)",
+  height: "90px",
+  fontSize: "1rem",
+  logoScale: 2.25, // ← Øk eller reduser for større/mindre firmanavn
+  logoOffset: "-1px", // ← Løfter/senker firmanavnet litt
+};
+
 export default function Header() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // lukk ved klikk utenfor og ESC
   useEffect(() => {
-    const onDown = (e: MouseEvent) => {
-      if (open && ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onEsc);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onEsc);
-    };
-  }, [open]);
-
-  const isActive = (href: string) =>
-    href === "/"
-      ? pathname === "/"
-      : pathname.startsWith(href);
+    document.documentElement.style.setProperty("--header-height", headerStyle.height);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-black/40 backdrop-blur border-b border-white/10 text-white">
-      <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="font-semibold tracking-wide">
-          Serviceleverandøren AS
-        </Link>
+    <header
+      className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 md:px-12 shadow-lg backdrop-blur-md transition-all"
+      style={{
+        backgroundColor: headerStyle.bgColor,
+        color: headerStyle.textColor,
+        borderBottom: `1px solid ${headerStyle.borderColor}`,
+        height: headerStyle.height,
+        fontSize: headerStyle.fontSize,
+      }}
+    >
+      {/* Logo / Firmanavn */}
+      <div
+        className="font-bold tracking-wide select-none"
+        style={{
+          transform: `scale(${headerStyle.logoScale}) translateY(${headerStyle.logoOffset})`,
+          transformOrigin: "left center",
+          lineHeight: "1",
+        }}
+      >
+<span style={{ color: "#4af0c4" }}>Service </span>
+<span style={{ color: "#ffffff" }}>Leverandøren AS</span>
+      </div>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-4">
-          {links.map((l) => (
+      {/* Desktop-meny */}
+      <nav className="hidden md:flex gap-8">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            style={{
+              color:
+                pathname === link.href
+                  ? headerStyle.linkHover
+                  : headerStyle.linkColor,
+              transition: "color 0.2s ease",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = headerStyle.linkHover)}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.color =
+                pathname === link.href
+                  ? headerStyle.linkHover
+                  : headerStyle.linkColor)
+            }
+          >
+            {link.text}
+          </Link>
+        ))}
+      </nav>
+
+      {/* Mobil-meny knapp */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="md:hidden p-2 text-neutral-200"
+      >
+        {menuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {/* Mobil-meny dropdown */}
+      {menuOpen && (
+        <nav className="absolute top-full left-0 w-full bg-neutral-900/95 border-t border-neutral-700 py-4 px-6 flex flex-col gap-3 md:hidden">
+          {links.map((link) => (
             <Link
-              key={l.href}
-              href={l.href}
-              className={`px-3 py-1 rounded hover:bg-white/10 ${
-                isActive(l.href) ? "bg-white/15 ring-1 ring-white/20" : ""
-              }`}
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className={`${
+                pathname === link.href ? "text-emerald-400 font-semibold" : "text-neutral-200"
+              } hover:text-emerald-300`}
             >
-              {l.text}
+              {link.text}
             </Link>
           ))}
         </nav>
-
-        {/* Mobile toggle */}
-        <button
-          aria-label={open ? "Lukk meny" : "Åpne meny"}
-          onClick={() => setOpen((v) => !v)}
-          className="md:hidden rounded-lg border border-white/15 bg-black/40 p-2"
-        >
-          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      {open && (
-        <div className="md:hidden px-4 pb-3" ref={ref}>
-          <div className="rounded-xl border border-white/10 bg-slate-800/90 p-2 flex flex-col">
-            {links.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className={`px-2 py-2 rounded hover:bg-white/10 ${
-                  isActive(l.href) ? "bg-white/15 ring-1 ring-white/20" : ""
-                }`}
-              >
-                {l.text}
-              </Link>
-            ))}
-          </div>
-        </div>
       )}
     </header>
   );

@@ -140,3 +140,16 @@ body {
 @media (max-width: 768px) {
   .responsive-h1 { font-size: 0.8em; }
 }
+html, body {
+  background-color: #0a0a0a;
+  color: #ededed;
+}
+:root {
+  --header-height: 80px; /* juster hvis headeren din er høyere/lavere */
+}
+:root {
+  --header-height: 96px; /* fallback dersom JS ikke har kjørt enda */
+}
+.text-shadow-xl {
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}

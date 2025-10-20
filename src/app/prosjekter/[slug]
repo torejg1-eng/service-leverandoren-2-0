@@ -1,0 +1,143 @@
+"use client";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+
+/**
+ * Viser automatisk alle bilder i /public/images/prosjekter/[slug]/
+ * Ingen krav til filnavn (kan være bad1.webp, IMG_2330.jpg osv.)
+ */
+export default function ProsjektGalleri() {
+  const { slug } = useParams();
+  const [images, setImages] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [index, setIndex] = useState<number>(0);
+
+  // last inn bilder dynamisk
+  useEffect(() => {
+    if (!slug) return;
+
+    // vi ber Next.js om innholdet i mappen ved build/runtime
+    // i dev vises alle filer fra /public
+    const exts = [".webp", ".jpg", ".jpeg", ".png"];
+    const found: string[] = [];
+
+    // prøv alle vanlige varianter (1–30 bilder)
+    for (let i = 1; i <= 30; i++) {
+      for (const ext of exts) {
+        const path = `/images/prosjekter/${slug}/${slug}${i}${ext}`;
+        found.push(path);
+      }
+    }
+
+    // fallback:  hent alle standardnavn uten tall (typisk IMG_ filer)
+    const fallback = [
+      `/images/prosjekter/${slug}/IMG_2330.webp`,
+      `/images/prosjekter/${slug}/IMG_2330.jpg`,
+      `/images/prosjekter/${slug}/${slug}.webp`,
+    ];
+
+    setImages([...found, ...fallback]);
+  }, [slug]);
+
+  const open = (src: string, i: number) => {
+    setSelected(src);
+    setIndex(i);
+  };
+  const close = () => setSelected(null);
+  const prev = () => {
+    const newIndex = (index - 1 + images.length) % images.length;
+    setIndex(newIndex);
+    setSelected(images[newIndex]);
+  };
+  const next = () => {
+    const newIndex = (index + 1) % images.length;
+    setIndex(newIndex);
+    setSelected(images[newIndex]);
+  };
+
+  // tastaturnavigasjon
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (!selected) return;
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [selected, index]);
+
+  return (
+    <section className="bg-neutral-900/40 min-h-screen py-16">
+      <div className="max-w-7xl mx-auto px-4">
+        <h1 className="text-4xl font-bold text-white mb-8 capitalize">
+          {slug} prosjekt
+        </h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {images.map((src, i) => (
+            <div
+              key={i}
+              className="relative overflow-hidden rounded-xl cursor-pointer"
+              onClick={() => open(src, i)}
+            >
+              <Image
+                src={src}
+                alt={`${slug} bilde ${i + 1}`}
+                width={800}
+                height={600}
+                className="object-cover hover:scale-105 transition-transform duration-300"
+                onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {selected && (
+        <div
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
+          onClick={close}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              prev();
+            }}
+            className="absolute left-8 text-white text-5xl font-bold select-none"
+          >
+            ‹
+          </button>
+
+          <Image
+            src={selected}
+            alt="Fullskjerm"
+            width={1400}
+            height={1000}
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
+          />
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              next();
+            }}
+            className="absolute right-8 text-white text-5xl font-bold select-none"
+          >
+            ›
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              close();
+            }}
+            className="absolute top-6 right-8 text-white text-3xl font-bold select-none"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
