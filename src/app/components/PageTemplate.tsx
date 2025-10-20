@@ -1,3 +1,4 @@
+// === START FIXED: src/app/components/PageTemplate.tsx ===
 "use client";
 import React from "react";
 
@@ -6,6 +7,7 @@ interface PageTemplateProps {
   subtitle: string;
   buttonText: string;
   onButtonClick?: () => void;
+  buttonHref?: string; // ✅ lagt til støtte for lenke-knapp
   bgColor?: string;
   services?: { title: string; desc: string }[];
 }
@@ -15,6 +17,7 @@ const PageTemplate: React.FC<PageTemplateProps> = ({
   subtitle,
   buttonText,
   onButtonClick,
+  buttonHref, // ✅ ny prop tas inn her
   bgColor = "bg-gray-700",
   services = [],
 }) => {
@@ -33,6 +36,14 @@ const PageTemplate: React.FC<PageTemplateProps> = ({
     ? "text-gray-200 drop-shadow-sm"
     : "text-gray-700";
 
+  const handleClick = () => {
+    if (buttonHref) {
+      window.location.href = buttonHref; // ✅ åpner lenke hvis oppgitt
+    } else if (onButtonClick) {
+      onButtonClick();
+    }
+  };
+
   return (
     <div className="pt-20">
       {/* HERO */}
@@ -42,7 +53,7 @@ const PageTemplate: React.FC<PageTemplateProps> = ({
         <h1 className={`text-4xl font-bold ${titleColor}`}>{title}</h1>
         <p className={`mt-2 text-lg ${subtitleColor}`}>{subtitle}</p>
         <button
-          onClick={onButtonClick}
+          onClick={handleClick}
           className="mt-6 bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 px-5 rounded shadow-md transition transform hover:scale-105"
         >
           {buttonText}
@@ -75,3 +86,4 @@ const PageTemplate: React.FC<PageTemplateProps> = ({
 };
 
 export default PageTemplate;
+// === END FIXED: src/app/components/PageTemplate.tsx ===
